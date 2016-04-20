@@ -3,7 +3,7 @@ var moment = require('moment')
 
 module.exports = function (app) {
   app.get('/', function (req, res) {
-    res.send({hi: 'there'})
+    res.send({hi: 'yolo'})
   })
 
   // timestamp route for timestamp challenge
