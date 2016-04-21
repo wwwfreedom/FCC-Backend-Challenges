@@ -1,6 +1,7 @@
 "use strict"
 var moment = require('moment')
 var parser = require('ua-parser-js')
+var isURL = require('validator/lib/isURL')
 
 module.exports = function (app) {
   app.get('/api', function (req, res) {
@@ -40,5 +41,17 @@ module.exports = function (app) {
       language: language,
       software: operatingSystem
     })
+  })
+
+  app.get('/api/url*', function (req, res) {
+    let url = req.params[0].substring(1)
+    // use validator library to check if email is valid
+    if (isURL(url)) {
+      res.send(url)
+    } else {
+      res.send({
+        error: "Wrong url format, make sure you have a valid protocol and real site."
+      })
+    }
   })
 }
