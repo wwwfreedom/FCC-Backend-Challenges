@@ -2,6 +2,9 @@
 var moment = require('moment')
 var parser = require('ua-parser-js')
 var isURL = require('validator/lib/isURL')
+var axios = require('axios')
+var urlApi = 'https://www.googleapis.com/urlshortener/v1/url/'
+var apiKey = 'AIzaSyDxeMS2mpu98fBU88hE59RCpsqQ3zX5BCQ'
 
 module.exports = function (app) {
   app.get('/api', function (req, res) {
@@ -44,10 +47,20 @@ module.exports = function (app) {
   })
 
   app.get('/api/url*', function (req, res) {
-    let url = req.params[0].substring(1)
+    let originalUrl = req.params[0].substring(1)
+    // set data for posting to google shorterner api
+    let data = { longUrl: originalUrl }
+    // set option configs for axios
+    let params = { params: { key: apiKey }}
     // use validator library to check if email is valid
-    if (isURL(url)) {
-      res.send(url)
+    if (isURL(originalUrl)) {
+      // call the api
+      axios.post(urlApi, data, params)
+      .then(response => res.send({
+        'original URL': originalUrl,
+        'short URL': response.data.id
+      }))
+      .catch((response) => console.log(response))
     } else {
       res.send({
         error: "Wrong url format, make sure you have a valid protocol and real site."

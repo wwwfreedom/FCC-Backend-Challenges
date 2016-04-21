@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/wwwfreedom/FCC-Backend-Challenges#readme",
   "dependencies": {
+    "axios": "^0.9.1",
     "body-parser": "^1.15.0",
     "express": "^4.13.4",
     "moment": "^2.13.0",
