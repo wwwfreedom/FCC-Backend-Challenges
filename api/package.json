@@ -1,6 +1,6 @@
 {
   "name": "fcc_backend",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "description": "Source code for all of my Free Code Camp Backend challenges",
   "main": "index.js",
   "scripts": {
