@@ -4,7 +4,7 @@ var parser = require('ua-parser-js')
 var isURL = require('validator/lib/isURL')
 var axios = require('axios')
 var urlApi = 'https://www.googleapis.com/urlshortener/v1/url/'
-var apiKey = 'AIzaSyDxeMS2mpu98fBU88hE59RCpsqQ3zX5BCQ'
+var apiKey = process.env.GOOGLE_URL_SHORTENER_API_KEY
 
 module.exports = function (app) {
   app.get('/api', function (req, res) {
