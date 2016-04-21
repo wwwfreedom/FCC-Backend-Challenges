@@ -4,19 +4,20 @@ services:
   nginx:
     container_name: nginx-proxy-server
     build:
-      context: nginx
+      context: .
+      dockerfile: ./nginx/Dockerfile
     links:
-      - web:web
+      - api:api
     ports:
       - "80:80"
       - "443:443"
     networks:
       - fcc-network
 
-  web:
-    container_name: web-frontend
+  api:
+    container_name: api-backend
     build:
-      context: web
+      context: ./api
     ports:
       - "3000"
     networks:

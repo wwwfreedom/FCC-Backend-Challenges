@@ -3,12 +3,12 @@ var moment = require('moment')
 var parser = require('ua-parser-js')
 
 module.exports = function (app) {
-  app.get('/', function (req, res) {
+  app.get('/api', function (req, res) {
     res.send({hi: 'yolo'})
   })
 
   // timestamp route for timestamp challenge
-  app.get('/timestamp*', function (req, res) {
+  app.get('/api/timestamp*', function (req, res) {
     // set the valid date format
     let dateFormats = ['MM-DD-YYYY', 'DD-MM-YYYY', 'MMMM-DD-YYYY', 'x', 'X']
     // parse userInput into a moment date object in accordance to date formats
@@ -28,7 +28,8 @@ module.exports = function (app) {
     }
   })
 
-  app.get('/whoami', function (req, res) {
+  // code for header parser challenge
+  app.get('/api/whoami', function (req, res) {
     var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
     // using user agent parser to parse out the details of the user-agent property
     var operatingSystem = parser(req.headers['user-agent']).os.name
