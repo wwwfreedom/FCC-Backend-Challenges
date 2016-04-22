@@ -105,4 +105,18 @@ module.exports = function (app) {
     })
     .catch((response) => console.log(response))
   })
+
+  // find the most recent 10 searchs in the database
+  app.get('/api/latest/imgsearch', (req, res) => {
+    let recentSearches = RecentSearch.find({}, (err, searches) => {
+      if (err) {throw err}
+      // transform the search result to exclude the mongo fields
+      let modRecentSearches = searches.map((search) => ({
+        searchTerm: search.searchTerm,
+        time: search.time
+      }))
+      // return the search found as json to the user
+      res.json(modRecentSearches)
+    }).limit(10).sort({ time: -1})
+  })
 }
