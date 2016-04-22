@@ -10,7 +10,7 @@ const morgan = require('morgan')
 const mongoose = require('mongoose')
 
 // DB Setup with fcc as the name of the database
-if (process.env.DEVELOPMENT) {
+if (process.env.DEVELOPMENT === true) {
   mongoose.connect('mongodb://127.0.0.1:fcc/fcc')
   console.log('connecting to local development mongo')
 } else {
