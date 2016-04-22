@@ -1,10 +1,13 @@
 "use strict"
-var moment = require('moment')
-var parser = require('ua-parser-js')
-var isURL = require('validator/lib/isURL')
-var axios = require('axios')
-var urlApi = 'https://www.googleapis.com/urlshortener/v1/url/'
-var apiKey = process.env.GOOGLE_URL_SHORTENER_API_KEY
+const moment = require('moment')
+const parser = require('ua-parser-js')
+const isURL = require('validator/lib/isURL')
+const axios = require('axios')
+const urlApi = 'https://www.googleapis.com/urlshortener/v1/url/'
+const googleApiKey = process.env.GOOGLE_URL_SHORTENER_API_KEY
+const imgurApiKey = `Client-ID ${process.env.IMGUR_API_KEY}`
+const imgurUrl = 'https://api.imgur.com/3/gallery/search/'
+const RecentSearch = require('./models/recentImgSearch.js')
 
 module.exports = function (app) {
   app.get('/api', function (req, res) {
@@ -51,7 +54,7 @@ module.exports = function (app) {
     // set data for posting to google shorterner api
     let data = { longUrl: originalUrl }
     // set option configs for axios
-    let params = { params: { key: apiKey }}
+    let params = { params: { key: googleApiKey }}
     // use validator library to check if email is valid
     if (isURL(originalUrl)) {
       // call the api
@@ -66,5 +69,54 @@ module.exports = function (app) {
         error: "Wrong url format, make sure you have a valid protocol and real site."
       })
     }
+  })
+
+  // code for image search abstraction layer challenge
+  app.get('/api/imgsearch*', function (req, res) {
+    let searchTerm = req.params[0].substring(1)
+    let pageNum = req.query.offset
+    let config = {
+      headers: { Authorization: imgurApiKey },
+      params: {
+        q: `title: ${searchTerm}`,
+        page: pageNum || 1
+      }
+    }
+
+    axios.get(imgurUrl, config)
+    .then((response) => {
+      let imgArr = response.data.data.map((img) => {
+        return {
+          url: img.link,
+          alt_text: img.title
+        }
+      })
+
+      // create and save the search term using RecentSearch model
+      const search = new RecentSearch({
+        searchTerm: searchTerm,
+        time: new Date().toString()
+      })
+
+      search.save((err) => {
+        if (err) { throw new Error('could not save to db')}
+        res.send(imgArr)
+      })
+    })
+    .catch((response) => console.log(response))
+  })
+
+  // find the most recent 10 searchs in the database
+  app.get('/api/latest/imgsearch', (req, res) => {
+    let recentSearches = RecentSearch.find({}, (err, searches) => {
+      if (err) {throw err}
+      // transform the search result to exclude the mongo fields
+      let modRecentSearches = searches.map((search) => ({
+        searchTerm: search.searchTerm,
+        time: search.time
+      }))
+      // return the search found as json to the user
+      res.json(modRecentSearches)
+    }).limit(10).sort({ time: -1})
   })
 }
