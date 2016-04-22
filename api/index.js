@@ -10,7 +10,8 @@ const morgan = require('morgan')
 const mongoose = require('mongoose')
 
 // DB Setup with fcc as the name of the database
-if (process.env.DEVELOPMENT === true) {
+// Lesson: Can't use native data type like true or false when access variable from process.env (everything is a string)
+if (process.env.NODE_ENV === 'development') {
   mongoose.connect('mongodb://127.0.0.1:fcc/fcc')
   console.log('connecting to local development mongo')
 } else {
