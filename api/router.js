@@ -72,11 +72,12 @@ module.exports = function (app) {
 
   app.get('/api/imgsearch*', function (req, res) {
     let searchTerm = req.params[0].substring(1)
+    let pageNum = req.query.offset
     let config = {
       headers: { Authorization: imgurApiKey },
       params: {
         q: `title: ${searchTerm}`,
-        page: 1
+        page: pageNum || 1
       }
     }
     axios.get(imgurUrl, config)
