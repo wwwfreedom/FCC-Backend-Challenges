@@ -1,12 +1,13 @@
 "use strict"
-var moment = require('moment')
-var parser = require('ua-parser-js')
-var isURL = require('validator/lib/isURL')
-var axios = require('axios')
-var urlApi = 'https://www.googleapis.com/urlshortener/v1/url/'
-var googleApiKey = process.env.GOOGLE_URL_SHORTENER_API_KEY
-var imgurApiKey = `Client-ID ${process.env.IMGUR_API_KEY}`
-var imgurUrl = 'https://api.imgur.com/3/gallery/search/'
+const moment = require('moment')
+const parser = require('ua-parser-js')
+const isURL = require('validator/lib/isURL')
+const axios = require('axios')
+const urlApi = 'https://www.googleapis.com/urlshortener/v1/url/'
+const googleApiKey = process.env.GOOGLE_URL_SHORTENER_API_KEY
+const imgurApiKey = `Client-ID ${process.env.IMGUR_API_KEY}`
+const imgurUrl = 'https://api.imgur.com/3/gallery/search/'
+const RecentSearch = require('./models/recentImgSearch.js')
 
 module.exports = function (app) {
   app.get('/api', function (req, res) {
@@ -70,6 +71,7 @@ module.exports = function (app) {
     }
   })
 
+  // code for image search abstraction layer challenge
   app.get('/api/imgsearch*', function (req, res) {
     let searchTerm = req.params[0].substring(1)
     let pageNum = req.query.offset
@@ -80,6 +82,7 @@ module.exports = function (app) {
         page: pageNum || 1
       }
     }
+
     axios.get(imgurUrl, config)
     .then((response) => {
       let imgArr = response.data.data.map((img) => {
@@ -88,7 +91,17 @@ module.exports = function (app) {
           alt_text: img.title
         }
       })
-      res.send(imgArr)
+
+      // create and save the search term using RecentSearch model
+      const search = new RecentSearch({
+        searchTerm: searchTerm,
+        time: new Date().toString()
+      })
+
+      search.save((err) => {
+        if (err) { throw new Error('could not save to db')}
+        res.send(imgArr)
+      })
     })
     .catch((response) => console.log(response))
   })

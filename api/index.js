@@ -7,6 +7,15 @@ const http = require('http')
 const bodyParser = require('body-parser')
 const router = require('./router.js')
 const morgan = require('morgan')
+const mongoose = require('mongoose')
+
+// DB Setup with fcc as the name of the database
+if (process.env.DEVELOPMENT) {
+  mongoose.connect('mongodb://127.0.0.1:fcc/fcc')
+  console.log('connecting to local development mongo')
+} else {
+  mongoose.connect('mongodb://mongodb:fcc/fcc')
+}
 
 const app = express()
 app.use(morgan('combined'))
