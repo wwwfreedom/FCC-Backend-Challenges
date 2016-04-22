@@ -1,4 +1,6 @@
 "use strict"
+// use to load env variable during development this is redundant for production deployment as it's taken care by docker
+require('dotenv').config()
 
 const express = require('express')
 const http = require('http')
