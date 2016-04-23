@@ -12,9 +12,19 @@ const path = require('path')
 const _ = require('lodash')
 
 const multer  = require('multer')
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, './uploads')
+  },
+  filename: function (req, file, cb) {
+    // in this case we're not making the name unique becasue we'll delete them staight away but in other case it's advise to make it unique
+    cb(null, file.originalname)
+  }
+})
+
 // adding option to multer, limit file size and file types
 const upload = multer({
-  dest: 'uploads/',
+  storage: storage,
   limits: {
     fileSize: 1024*5,
     files: 1
@@ -152,6 +162,8 @@ module.exports = function (app) {
   app.post('/api/fileupload', upload.single('yolo'), (req, res, next) => {
     console.log(req.file)
     console.log(req.body)
+    // name the file upload with file extension
+    // delete the file after upload
     res.send(req.file)
   })
 
