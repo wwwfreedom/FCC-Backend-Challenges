@@ -174,8 +174,9 @@ module.exports = function (app) {
   app.use(function(err, req, res, next) {
     if (err.code === 'LIMIT_FILE_SIZE' || err.code === 403) {
       res.status(403).send('This is only a demontration of a file upload api on a tiny server. Please upload a file smaller than 100kb.')
+    } else {
+      console.error(err.stack);
+      res.status(500).send('Something broke!');
     }
-    console.error(err.stack);
-    res.status(500).send('Something broke!');
-  });
+  })
 }
