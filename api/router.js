@@ -8,6 +8,30 @@ const googleApiKey = process.env.GOOGLE_URL_SHORTENER_API_KEY
 const imgurApiKey = `Client-ID ${process.env.IMGUR_API_KEY}`
 const imgurUrl = 'https://api.imgur.com/3/gallery/search/'
 const RecentSearch = require('./models/recentImgSearch.js')
+const path = require('path')
+const _ = require('lodash')
+
+const multer  = require('multer')
+// adding option to multer, limit file size and file types
+const upload = multer({
+  dest: 'uploads/',
+  limits: {
+    fileSize: 1024*5,
+    files: 1
+  },
+  fileFilter: function (req, file, next) {
+    var ext = path.extname(file.originalname);
+
+    // if file is txt then carry on as usual
+    if(_.indexOf(['.txt'], ext) !== -1) {
+        return next(null, true);
+    }
+    // if not then pass make a new error object and pass it down to error handler
+    let err = new Error('Wrong file type!')
+    err.code = 403
+    next(err);
+  }
+})
 
 module.exports = function (app) {
   app.get('/api', function (req, res) {
@@ -121,13 +145,22 @@ module.exports = function (app) {
   })
 
   // code for fileMetadata upload microservice challenge
-
   app.get('/api/fileMetadata', (req, res) => {
-    res.send('<form action="/api/fileupload" method="post" > <input type="file"> <input type="submit"> </form>')
+    res.send('<form action="/api/fileupload" enctype="multipart/form-data" method="post" > <input type="file" name="yolo" required> <input type="submit" value="upload"> </form>')
   })
 
-  app.post('/api/fileupload', (req, res) => {
-    console.log(req)
-    res.send('formaway')
+  app.post('/api/fileupload', upload.single('yolo'), (req, res, next) => {
+    console.log(req.file)
+    console.log(req.body)
+    res.send(req.file)
   })
+
+  // last stop to handle errors in the all of the above routes
+  app.use(function(err, req, res, next) {
+    if (err.code === 'LIMIT_FILE_SIZE' || err.code === 403) {
+      res.status(403).send('This is only a demontration on a tiny server. Please upload .txt file smaller than 5kb. All other file types beside text file is too much for me to handle :)')
+    }
+    console.error(err.stack);
+    res.status(500).send('Something broke!');
+  });
 }
