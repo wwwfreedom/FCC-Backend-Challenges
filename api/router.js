@@ -10,12 +10,12 @@ const imgurUrl = 'https://api.imgur.com/3/gallery/search/'
 const RecentSearch = require('./models/recentImgSearch.js')
 const path = require('path')
 const _ = require('lodash')
+const fs = require('fs')
 
 const multer  = require('multer')
 const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, './uploads')
-  },
+  // note if you pass destination a function then you must manually create the folder, when passing destination a string make sure that the folder doesn't already exist otherwise it will throw error
+  destination: './tmp/uploads',
   filename: function (req, file, cb) {
     // in this case we're not making the name unique becasue we'll delete them staight away but in other case it's advise to make it unique
     cb(null, file.originalname)
@@ -26,21 +26,22 @@ const storage = multer.diskStorage({
 const upload = multer({
   storage: storage,
   limits: {
-    fileSize: 1024*5,
+    fileSize: 1024*100,
     files: 1
   },
-  fileFilter: function (req, file, next) {
-    var ext = path.extname(file.originalname);
+  // // example of limiting file type
+  // fileFilter: function (req, file, next) {
+  //   var ext = path.extname(file.originalname);
 
-    // if file is txt then carry on as usual
-    if(_.indexOf(['.txt'], ext) !== -1) {
-        return next(null, true);
-    }
-    // if not then pass make a new error object and pass it down to error handler
-    let err = new Error('Wrong file type!')
-    err.code = 403
-    next(err);
-  }
+  //   // if file is txt then carry on as usual
+  //   if(_.indexOf(['.txt'], ext) !== -1) {
+  //       return next(null, true);
+  //   }
+  //   // if not then pass make a new error object and pass it down to error handler
+  //   let err = new Error('Wrong file type!')
+  //   err.code = 403
+  //   next(err);
+  // }
 })
 
 module.exports = function (app) {
@@ -160,17 +161,19 @@ module.exports = function (app) {
   })
 
   app.post('/api/fileupload', upload.single('yolo'), (req, res, next) => {
-    console.log(req.file)
-    console.log(req.body)
-    // name the file upload with file extension
     // delete the file after upload
-    res.send(req.file)
+    fs.unlink(`./tmp/uploads/${req.file.filename}`, (err) => {
+      if (err) console.log(new Error('could not delete temporary upload folder'))
+    })
+    res.json({
+      filesize: `${req.file.size} bytes`
+    })
   })
 
   // last stop to handle errors in the all of the above routes
   app.use(function(err, req, res, next) {
     if (err.code === 'LIMIT_FILE_SIZE' || err.code === 403) {
-      res.status(403).send('This is only a demontration on a tiny server. Please upload .txt file smaller than 5kb. All other file types beside text file is too much for me to handle :)')
+      res.status(403).send('This is only a demontration of a file upload api on a tiny server. Please upload a file smaller than 100kb.')
     }
     console.error(err.stack);
     res.status(500).send('Something broke!');

@@ -1,1 +1,0 @@
-Course materials are available at: http://github.com/samartioli/node-play-by-play
