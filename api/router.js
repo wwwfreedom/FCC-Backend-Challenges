@@ -119,4 +119,15 @@ module.exports = function (app) {
       res.json(modRecentSearches)
     }).limit(10).sort({ time: -1})
   })
+
+  // code for fileMetadata upload microservice challenge
+
+  app.get('/api/fileMetadata', (req, res) => {
+    res.send('<form action="/api/fileupload" method="post" > <input type="file"> <input type="submit"> </form>')
+  })
+
+  app.post('/api/fileupload', (req, res) => {
+    console.log(req)
+    res.send('formaway')
+  })
 }
