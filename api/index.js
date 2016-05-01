@@ -8,6 +8,7 @@ const bodyParser = require('body-parser')
 const router = require('./router.js')
 const morgan = require('morgan')
 const mongoose = require('mongoose')
+const app = express()
 
 // DB Setup with fcc as the name of the database
 // Lesson: Can't use native data type like true or false when access variable from process.env (everything is a string)
@@ -18,10 +19,13 @@ if (process.env.NODE_ENV === 'development') {
   mongoose.connect('mongodb://mongodb:fcc/fcc')
 }
 
-const app = express()
-app.use(morgan('combined'))
+// App setup
+
+app.use(morgan('combined')) // logging incoming request
+app.use(bodyParser.json()) // parse incoming request to json
 router(app)
 
+// server setup(talking to outside world)
 const port = process.env.PORT || 3000
 const server = http.createServer(app)
 server.listen(port)
