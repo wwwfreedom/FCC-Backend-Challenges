@@ -8,6 +8,7 @@ const bodyParser = require('body-parser')
 const router = require('./router.js')
 const morgan = require('morgan')
 const mongoose = require('mongoose')
+const expressValidator = require('express-validator')
 const app = express()
 
 // DB Setup with fcc as the name of the database
@@ -23,6 +24,7 @@ if (process.env.NODE_ENV === 'development') {
 
 app.use(morgan('combined')) // logging incoming request
 app.use(bodyParser.json()) // parse incoming request to json
+app.use(expressValidator())
 router(app)
 
 // server setup(talking to outside world)

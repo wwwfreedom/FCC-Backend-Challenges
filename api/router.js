@@ -12,6 +12,8 @@ const path = require('path')
 const _ = require('lodash')
 const fs = require('fs')
 
+const Authentication = require('./controllers/authentication')
+
 const multer  = require('multer')
 const storage = multer.diskStorage({
   // note if you pass destination a function then you must manually create the folder, when passing destination a string make sure that the folder doesn't already exist otherwise it will throw error
@@ -169,6 +171,8 @@ module.exports = function (app) {
       filesize: `${req.file.size} bytes`
     })
   })
+
+  app.post('/api/signup', Authentication.signup)
 
   // last stop to handle errors in the all of the above routes
   app.use(function(err, req, res, next) {
