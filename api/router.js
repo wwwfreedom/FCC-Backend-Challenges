@@ -13,6 +13,10 @@ const _ = require('lodash')
 const fs = require('fs')
 
 const Authentication = require('./controllers/authentication')
+const passportService = require('./services/passport.js')
+const passport = require('passport')
+
+const requireAuth = passport.authenticate('jwt', { session: false })
 
 const multer  = require('multer')
 const storage = multer.diskStorage({
@@ -47,7 +51,7 @@ const upload = multer({
 })
 
 module.exports = function (app) {
-  app.get('/api', function (req, res) {
+  app.get('/api', requireAuth, function (req, res) {
     res.send({hi: 'yolo'})
   })
 

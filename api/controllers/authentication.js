@@ -48,7 +48,8 @@ exports.signup = function (req, res, next) {
     user.save((err) => {
       if (err) { return next(err)}
       // Respond to request indicating the user was created
-      res.send({ token: tokenForUser(user, 300) })
+      // todo: can make the expiry date default to 1 day and 7 days if user tick the remember me during login
+      res.send({ token: tokenForUser(user, '7 days') })
     })
   })
 }
