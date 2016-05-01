@@ -1,4 +1,15 @@
 const User = require('../models/user.js')
+const jwt = require('jsonwebtoken')
+const config = require('../config.js')
+
+function tokenForUser(user, expiresIn) {
+  const payload = {
+    iat: Date.now(), // issue time
+    iss: 'Kevin', // issuer 'put the website name here'
+    sub: user.id // convention sub = subject
+  }
+  return jwt.sign(payload, config.secret, { expiresIn }) // expiresIn uses seconds
+}
 
 exports.signup = function (req, res, next) {
   // validation and sanitization of user input
@@ -37,7 +48,7 @@ exports.signup = function (req, res, next) {
     user.save((err) => {
       if (err) { return next(err)}
       // Respond to request indicating the user was created
-      res.send({ success: true })
+      res.send({ token: tokenForUser(user, 300) })
     })
   })
 }
