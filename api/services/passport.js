@@ -3,6 +3,7 @@ const User = require('../models/user.js')
 const config = require('../config.js')
 const JwtStrategy = require('passport-jwt').Strategy
 const ExtractJwt = require('passport-jwt').ExtractJwt
+const LocalStrategy = require('passport-local')
 
 // Setup options for JWT Strategy
 const jwtOptions = {
@@ -35,3 +36,27 @@ const jwtLogin = new JwtStrategy(jwtOptions, function (payload, done) {
 
 // Tell passport to use this strategy
 passport.use(jwtLogin)
+
+// Create local Strategy
+// basically saying when passport local look for username just use email
+const localOptions = { usernameField: 'email'}
+const localLogin = new LocalStrategy(localOptions, (email, password, done) => {
+  // verify this email and password, call done with the user
+  // if it's the correct email and password
+  // otherwise, call done with false
+  User.findOne({ email }, (err, user) => {
+    if (err) { return done(err)}
+
+    if (!user) { return done(null, false)} // return a state back to client so it can redirect to login page, probably not a good idea due to security
+
+    user.comparePassword(password, (err, isMatch) => {
+      if (err) { return done(err) } // if bcrypt error
+      // future feature: increment counter  on ip address to stop bruteforce password guess
+      if (!isMatch) { return done(null, false)}
+
+      return done(null, user)
+    })
+  })
+})
+
+passport.use(localLogin)

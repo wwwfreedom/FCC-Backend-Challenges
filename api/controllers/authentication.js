@@ -11,6 +11,16 @@ function tokenForUser(user, expiresIn) {
   return jwt.sign(payload, config.secret, { expiresIn }) // expiresIn uses seconds
 }
 
+exports.signin = function (req, res, next) {
+  console.log(req.body)
+  // User has already had their email and password authenticated
+  // we just need to give them a token
+  // req.user is pass in from the passport local middleware strategy as part of returning done(null, user) in the passport.js
+  // todo: can make the expiry date default to 1 day and 7 days if user tick the remember me during login
+  res.send({ token: tokenForUser(req.user, '1 day')})
+}
+
+
 exports.signup = function (req, res, next) {
   // validation and sanitization of user input
   // checkbody is a method from express-validator library and it only check the body of the request fn signature (fields, errorMessage)
@@ -48,8 +58,7 @@ exports.signup = function (req, res, next) {
     user.save((err) => {
       if (err) { return next(err)}
       // Respond to request indicating the user was created
-      // todo: can make the expiry date default to 1 day and 7 days if user tick the remember me during login
-      res.send({ token: tokenForUser(user, '7 days') })
+      res.send({ token: tokenForUser(user, '1 day') })
     })
   })
 }

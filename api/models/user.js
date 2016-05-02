@@ -44,6 +44,15 @@ const userSchema = new mongoose.Schema({
   })
  })
 
+ userSchema.methods.comparePassword = function (candidatePassword, callback) {
+  // this is a reference to user model, this.password is our hash + salt password
+  bcrypt.compare(candidatePassword, this.password, (err, isMatch) => {
+    if (err) { return callback(err) }
+
+    callback(null, isMatch)
+   })
+ }
+
 // Create the model class
 // create a collection name user using the userSchema for each new documents
 const ModelClass = mongoose.model('user', userSchema)
