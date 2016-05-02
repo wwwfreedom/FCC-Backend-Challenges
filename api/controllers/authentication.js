@@ -1,6 +1,8 @@
 const User = require('../models/user.js')
 const jwt = require('jsonwebtoken')
 const config = require('../config.js')
+const passport = require('passport')
+const moment = require('moment')
 
 function tokenForUser(user, expiresIn) {
   const payload = {
@@ -11,12 +13,27 @@ function tokenForUser(user, expiresIn) {
   return jwt.sign(payload, config.secret, { expiresIn }) // expiresIn uses seconds
 }
 
-exports.signin = function (req, res, next) {
+exports.signin = function(req, res, next) {
   // User has already had their email and password authenticated
   // we just need to give them a token
   // req.user is pass in from the passport local middleware strategy as part of returning done(null, user) in the passport.js
   // todo: can make the expiry date default to 1 day and 7 days if user tick the remember me during login by having client send extra property remember me for 7 days as true, we then detect that in the request body and change the expiry date.
-  res.send({ token: tokenForUser(req.user, '1 day')})
+  passport.authenticate('local', function(err, user, info) {
+    if (err) { return next(err); }
+    if (!user) { return res.send({ errors: ["Invalid login credentials. Please try again."] } )}
+    const resHeader = {
+      'access-token': tokenForUser(user, '1 day'),
+      client: 'test',
+      expiry: moment().add(1, 'd').format('X'),
+      uid: 'test@test.com'
+    }
+    res.status(200).header(resHeader).send({
+      data: {
+        uid: user.id,
+        provider: 'email'
+      }
+    })
+  })(req, res, next) // passing req, res, next into passport authenticate making it available for our custom callback
 }
 
 

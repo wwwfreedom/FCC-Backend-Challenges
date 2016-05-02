@@ -177,7 +177,8 @@ module.exports = function (app) {
     })
   })
 
-  app.post('/api/signin', requireSignin, Authentication.signin)
+  app.post('/api/signin', Authentication.signin)
+
   app.post('/api/signup', Authentication.signup)
 
   // last stop to handle errors in the all of the above routes
