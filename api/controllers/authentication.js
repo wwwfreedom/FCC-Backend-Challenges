@@ -12,11 +12,10 @@ function tokenForUser(user, expiresIn) {
 }
 
 exports.signin = function (req, res, next) {
-  console.log(req.body)
   // User has already had their email and password authenticated
   // we just need to give them a token
   // req.user is pass in from the passport local middleware strategy as part of returning done(null, user) in the passport.js
-  // todo: can make the expiry date default to 1 day and 7 days if user tick the remember me during login
+  // todo: can make the expiry date default to 1 day and 7 days if user tick the remember me during login by having client send extra property remember me for 7 days as true, we then detect that in the request body and change the expiry date.
   res.send({ token: tokenForUser(req.user, '1 day')})
 }
 

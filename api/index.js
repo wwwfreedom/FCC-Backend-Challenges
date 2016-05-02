@@ -9,6 +9,7 @@ const router = require('./router.js')
 const morgan = require('morgan')
 const mongoose = require('mongoose')
 const expressValidator = require('express-validator')
+const cors = require('cors')
 const app = express()
 
 // DB Setup with fcc as the name of the database
@@ -23,6 +24,7 @@ if (process.env.NODE_ENV === 'development') {
 // App setup
 
 app.use(morgan('combined')) // logging incoming request
+app.use(cors()) // allow cross origin domain
 app.use(bodyParser.json()) // parse incoming request to json
 app.use(expressValidator())
 router(app)
