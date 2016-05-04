@@ -7,7 +7,8 @@ import RaisedButton from 'material-ui/RaisedButton'
 
 class Header extends Component {
   static propTypes = {
-    width: PropTypes.number.isRequired
+    width: PropTypes.number.isRequired,
+    mobileMenuClick: PropTypes.func.isRequired
   };
 
   getStyle() {
@@ -74,6 +75,7 @@ class Header extends Component {
         showMenuIconButton={showMenuIconButton}
         titleStyle={styles.appBarTitle}
         style={styles.appBar}
+        onLeftIconButtonTouchTap={this.props.mobileMenuClick}
       >
         <Link to='/signin'>
           <FlatButton label='Sign in' style={styles.navLink} />
