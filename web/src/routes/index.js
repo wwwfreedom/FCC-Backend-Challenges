@@ -8,9 +8,11 @@ import { Route, IndexRoute } from 'react-router'
 // your current file is.
 import CoreLayout from 'layouts/CoreLayout/CoreLayout'
 import HomeView from 'views/HomeView/HomeView'
+import Signin from 'containers/Auth/Signin'
 
 export default (store) => (
   <Route path='/' component={CoreLayout}>
+    <Route path='/signin' component={Signin} />
     <IndexRoute component={HomeView} />
   </Route>
 )

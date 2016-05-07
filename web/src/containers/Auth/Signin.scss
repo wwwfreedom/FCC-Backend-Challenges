@@ -1,0 +1,145 @@
+@import 'base';
+
+.container {
+  display: flex;
+  flex-flow: column nowrap;
+  margin: 0 auto;
+  width: 320px;
+  @include MQ(SM) {
+    margin: 2em auto;
+    width: 494px;
+  }
+}
+
+.card {
+  padding-bottom: 0.75em;
+  width: 100% !important;
+}
+
+.header {
+  padding: 1em 1em 0 1em !important;
+  span {
+    font-size: 1.2em !important;
+  }
+}
+
+.formBody {
+  display: flex;
+  flex-flow: column nowrap;
+  margin: 0 1em;
+  padding: 0em 1em 1em 1em !important;
+  @include MQ(SM) {
+    margin: 0;
+    padding: 0em 32px 1em 32px !important;
+  }
+}
+
+.input {
+  cursor: pointer;
+  opacity: 0;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  width: 100%;
+}
+
+.cardActions {
+  text-align: center;
+  margin: 1em auto;
+  @include MQ(SM) {
+    margin: 0;
+    margin-top: 32px !important;
+  }
+}
+
+.signinButton {
+  min-width: 257px !important;
+  height: 46px !important;
+  margin: 0 !important;
+  @include MQ(SM) {
+    min-width: 430px !important;
+  }
+}
+
+.otherSigninButton {
+  min-width: 257px !important;
+  height: 46px !important;
+  @include MQ(SM) {
+    min-width: 430px !important;
+  }
+}
+
+.thirdPartySignin {
+  text-align: center;
+  margin: 1em auto;
+  @include MQ(SM) {
+    padding: 32px 32px 0 32px !important;
+  }
+}
+
+.separator {
+  color: #999;
+  margin: 1.5em auto;
+  margin-bottom: 0;
+  position: relative;
+  z-index: 3;
+  width: 250px;
+}
+
+.lineSeparator {
+  &:before {
+    display: block;
+    border: 1px solid #999;
+    width: 40%;
+    content: ' ';
+    position: absolute;
+    top: 50%;
+    left: 5%;
+  }
+  &:after {
+    display: block;
+    border: 1px solid #999;
+    width: 40%;
+    content: ' ';
+    position: absolute;
+    top: 50%;
+    right: 5%;
+  }
+}
+
+.rememberOrForget {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  margin-top: 1em;
+  font-size: 0.8em;
+  @include MQ(SM) {
+    font-size: 1em;
+  }
+}
+
+.forget {
+  padding-top: 5px; // got get the forget password text to line up with remember me
+  text-decoration: underline;
+}
+
+.test {
+  display: flex;
+  justify-content: space-between;
+}
+
+.signup {
+  display: flex;
+  justify-content: space-between;
+  margin: 0 1em !important;
+  align-items: center;
+}
+
+.signupText {
+  @include MQ(SM) {
+    letter-spacing: 0.1em;
+  }
+}
+
