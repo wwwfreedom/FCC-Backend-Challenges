@@ -11,13 +11,17 @@ import {Link} from 'react-router'
 import { emailSignIn } from 'redux/auth/authenticate'
 import { reduxForm } from 'redux-form'
 import isEmail from 'validator/lib/isEmail'
+import RefreshIndicator from 'material-ui/RefreshIndicator'
+import { TINY } from 'containers/DetectWidth'
 
 export class Signin extends Component {
   static propTypes = {
     handleSubmit: PropTypes.func.isRequired, // from redux-form
     fields: PropTypes.object.isRequired, // from redux-form
     emailSignIn: PropTypes.func.isRequired, // from authenticate action
-    authError: PropTypes.object // from auth reducer
+    authError: PropTypes.object, // from auth reducer
+    loading: PropTypes.bool.isRequired, // from auth reducer
+    width: PropTypes.number.isRequired // from HOC DetectWidth
   };
 
   handleFormSubmit({email, password}) {
@@ -25,7 +29,7 @@ export class Signin extends Component {
   }
 
   render() {
-    const { handleSubmit, fields: { email, password }, authError } = this.props
+    const { handleSubmit, fields: { email, password }, authError, loading, width } = this.props
     return (
       <form
         className={sty.container}
@@ -75,7 +79,16 @@ export class Signin extends Component {
             </div>
           </CardText>
           <CardActions className={sty.cardActions}>
-            <RaisedButton
+            {loading ? <div className={sty.loading}>
+              <RefreshIndicator
+                size={50}
+                left={width === TINY ? 135 : 221}
+                top={0}
+                loadingColor={"#FF9800"}
+                status="loading"
+              />
+            </div>
+            : <RaisedButton
               label='Sign In'
               primary
               labelPosition='before'
@@ -83,6 +96,7 @@ export class Signin extends Component {
             >
               <input type="submit" className={sty.input} />
             </RaisedButton>
+          }
             <hr />
             <div className={sty.signup}>
               <div className={sty.signupText}>Don't have an account?</div>
@@ -121,6 +135,7 @@ function validate(formProps) {
 
 const mapStateToProps = (state) => ({
   // authError: state.auth.error
+  loading: state.auth.loading
 })
 
 export default reduxForm({

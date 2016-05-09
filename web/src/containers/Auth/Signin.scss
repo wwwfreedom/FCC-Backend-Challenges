@@ -129,11 +129,6 @@
   text-decoration: underline;
 }
 
-.test {
-  display: flex;
-  justify-content: space-between;
-}
-
 .signup {
   display: flex;
   justify-content: space-between;
@@ -147,3 +142,7 @@
   }
 }
 
+.loading {
+  height: 46px;
+  margin: 0 auto;
+}

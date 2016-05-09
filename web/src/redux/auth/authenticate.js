@@ -33,9 +33,11 @@ export const emailSignIn = ({email, password}) => (dispatch, getState) => {
     // save the JWT token to local storage
     localStorage.setItem('token', response.headers['access-token'])
     // update state to indicate user is authenticated
-    dispatch(authenticationComplete())
-    // redirect to the route /feature
-    dispatch(push('/'))
+    setTimeout(function() {
+      dispatch(authenticationComplete())
+      // redirect to the route /feature
+      dispatch(push('/'))
+    }, 300) // add slight delay for loader to draw for ux
   })
   .catch((error) => {
     // error case when Api server is down
