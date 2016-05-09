@@ -13,12 +13,40 @@ function tokenForUser(user, expiresIn) {
   return jwt.sign(payload, config.secret, { expiresIn }) // expiresIn uses seconds
 }
 
+function userInputValidationSanitization(req) {
+  // validation and sanitization of user input
+  // checkbody is a method from express-validator library and it only check the body of the request fn signature (fields, errorMessage)
+  req.checkBody('email', 'Valid email is required')
+      .notEmpty()
+      .isEmail()
+      .withMessage('Invalid email') // withMessage is use for individual errors
+
+  req.checkBody('password', 'Password is required')
+    .notEmpty()
+    .len(4, 30)
+    .withMessage('Password must be between 4 & 30 characters long')
+
+  // normalizeEmail is method from validator library which is a key dependency of express-validator.
+  req.sanitize('email')
+    .normalizeEmail({ lowercase: true, remove_dost: false })
+
+  return req.validationErrors()
+}
+
 exports.signin = function(req, res, next) {
   // User has already had their email and password authenticated
   // we just need to give them a token
   // req.user is pass in from the passport local middleware strategy as part of returning done(null, user) in the passport.js
   // todo: can make the expiry date default to 1 day and 7 days if user tick the remember me during login by having client send extra property remember me for 7 days as true, we then detect that in the request body and change the expiry date.
   passport.authenticate('local', function(err, user, info) {
+    // validation and sanitization of user input
+    const errors = userInputValidationSanitization(req)
+    // if validation error return errors to user
+    if (errors) {
+      return res.status(400).send({ errors: errors.map((error) => error.msg)})
+    }
+
+    // if error return from passport.authenticate
     if (err) { return next(err); }
     if (!user) { return res.status(400).send({ errors: ["Invalid login credentials. Please try again."] } )}
     const resHeader = {
@@ -36,23 +64,12 @@ exports.signin = function(req, res, next) {
   })(req, res, next) // passing req, res, next into passport authenticate making it available for our custom callback
 }
 
-
 exports.signup = function (req, res, next) {
   // validation and sanitization of user input
-  // checkbody is a method from express-validator library and it only check the body of the request fn signature (fields, errorMessage)
-  req.checkBody('email', 'Valid email is required').notEmpty()
-    .isEmail().withMessage('Invalid email')
-  // withMessage is use for individual errors
-  req.checkBody('password', 'Password is required').notEmpty()
-    .len(4, 30).withMessage('Password must be between 4 & 30 characters long')
-  // normalizeEmail is method from validator library which is a key dependency of express-validator.
-  req.sanitize('email').normalizeEmail({ lowercase: true, remove_dost: false })
-
-  const errors = req.validationErrors()
-
+  const errors = userInputValidationSanitization(req)
   // if validation error return errors to user
   if (errors) {
-    return res.status(422).send({ errors: errors.map((error) => error.msg)})
+    return res.status(400).send({ errors: errors.map((error) => error.msg)})
   }
 
   const email = req.body.email
@@ -65,7 +82,8 @@ exports.signup = function (req, res, next) {
     if (err) { return next(err) }
     // Step 2: if a user with email does exist return an error
     if (existingUser) {
-      return res.status(422).send({error: 'Email is in use'})
+      // using 409 code here according to (http://stackoverflow.com/questions/3825990/http-response-code-for-post-when-resource-already-exists)
+      return res.status(409).send({error: 'Email is in use'})
     }
     // Step 3: If a user with email does NOT exist, create and save user record
     // make a new user
