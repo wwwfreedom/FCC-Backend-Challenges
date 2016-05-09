@@ -60,13 +60,21 @@ export const emailSignIn = ({email, password}) => (dispatch, getState) => {
 // ------------------------------------
 
 const ACTION_HANDLERS = {
-  [AUTHENTICATION_START]: (state) => ({ ...state, loading: true }),
+  [AUTHENTICATION_START]: (state) => ({
+    ...state,
+    loading: true,
+    error: { message: '', status: false } // reset error on auth start
+  }),
   [AUTHENTICATION_COMPLETE]: (state) => ({
     ...state,
     loading: false,
     authenticated: true
   }),
-  [AUTHENTICATION_ERROR]: (state, action) => ({ ...state, error: action.payload })
+  [AUTHENTICATION_ERROR]: (state, action) => ({
+    ...state,
+    error: action.payload,
+    loading: false
+  })
 }
 
 // ------------------------------------
