@@ -24,14 +24,17 @@ if (process.env.NODE_ENV === 'development') {
 // App setup
 
 app.use(morgan('combined')) // logging incoming request
-app.use(cors()) // allow cross origin domain
+// lesson: must expose custom header when using cors and if you have custom headers
+app.use(cors({
+  exposedHeaders: ['access-token', 'expiry', 'uid']
+})) // allow cross origin domain
 app.use(bodyParser.json()) // parse incoming request to json
 app.use(expressValidator())
 app.use(passport.initialize())
 router(app)
 
 // server setup(talking to outside world)
-const port = process.env.PORT || 3000
+const port = process.env.PORT || 3090
 const server = http.createServer(app)
 server.listen(port)
 console.log('Server listening on port', port)

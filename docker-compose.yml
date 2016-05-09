@@ -19,7 +19,7 @@ services:
     build:
       context: ./api
     ports:
-      - "3000"
+      - "3090"
     env_file: .env
     networks:
       - fcc-network

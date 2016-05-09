@@ -20,7 +20,7 @@ exports.signin = function(req, res, next) {
   // todo: can make the expiry date default to 1 day and 7 days if user tick the remember me during login by having client send extra property remember me for 7 days as true, we then detect that in the request body and change the expiry date.
   passport.authenticate('local', function(err, user, info) {
     if (err) { return next(err); }
-    if (!user) { return res.send({ errors: ["Invalid login credentials. Please try again."] } )}
+    if (!user) { return res.status(400).send({ errors: ["Invalid login credentials. Please try again."] } )}
     const resHeader = {
       'access-token': tokenForUser(user, '1 day'),
       client: 'test',
