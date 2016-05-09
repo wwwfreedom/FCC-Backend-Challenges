@@ -56,18 +56,22 @@
 
 .signinButton {
   min-width: 257px !important;
-  height: 46px !important;
   margin: 0 !important;
   @include MQ(SM) {
     min-width: 430px !important;
+  }
+  button {
+    height: 46px !important;
   }
 }
 
 .otherSigninButton {
   min-width: 257px !important;
-  height: 46px !important;
   @include MQ(SM) {
     min-width: 430px !important;
+  }
+  button {
+    height: 46px !important;
   }
 }
 
